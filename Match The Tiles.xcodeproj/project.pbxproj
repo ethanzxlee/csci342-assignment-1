@@ -58,12 +58,12 @@
 		A17FC0061CA8C45700546CD8 /* Match The Tiles */ = {
 			isa = PBXGroup;
 			children = (
+				A17FC00E1CA8C45700546CD8 /* Assets.xcassets */,
+				A17FC0131CA8C45700546CD8 /* Info.plist */,
+				A17FC0101CA8C45700546CD8 /* LaunchScreen.storyboard */,
+				A17FC00B1CA8C45700546CD8 /* Main.storyboard */,
 				A17FC0071CA8C45700546CD8 /* AppDelegate.swift */,
 				A17FC0091CA8C45700546CD8 /* ViewController.swift */,
-				A17FC00B1CA8C45700546CD8 /* Main.storyboard */,
-				A17FC00E1CA8C45700546CD8 /* Assets.xcassets */,
-				A17FC0101CA8C45700546CD8 /* LaunchScreen.storyboard */,
-				A17FC0131CA8C45700546CD8 /* Info.plist */,
 				A17FC0191CA8C50300546CD8 /* GameModel.swift */,
 				A17FC01B1CA8F40700546CD8 /* TileView.swift */,
 			);

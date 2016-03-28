@@ -17,7 +17,11 @@ class TileView: UIView {
     var delegate : TileViewDelegate?
     var tileIndex : Int?
     
-    var tileImage : UIImage?
+    var tileImage : UIImage? {
+        didSet {
+            tileImageView?.image = tileImage
+        }
+    }
     var tileImageView : UIImageView?
     var tileImageViewConstraintCenterX: NSLayoutConstraint?
     var tileImageViewConstraintCenterY: NSLayoutConstraint?
@@ -32,6 +36,9 @@ class TileView: UIView {
     var questionImageViewConstraintHeight : NSLayoutConstraint?
     var questionImageViewConstraintWidthExpanded : NSLayoutConstraint?
     var questionImageViewConstraintWidthCollapsed : NSLayoutConstraint?
+    
+    var isImageCovered : Bool?
+    var isTileHidden : Bool?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -47,8 +54,8 @@ class TileView: UIView {
 
         questionImageViewConstraintCenterX = NSLayoutConstraint(item: questionImageView!, attribute: .CenterX, relatedBy: .Equal, toItem: self, attribute: .CenterX, multiplier: 1, constant: 0)
         questionImageViewConstraintCenterY = NSLayoutConstraint(item: questionImageView!, attribute: .CenterY, relatedBy: .Equal, toItem: self, attribute: .CenterY, multiplier: 1, constant: 0)
-        questionImageViewConstraintHeight = NSLayoutConstraint(item: questionImageView!, attribute: .Height, relatedBy: .Equal, toItem: self, attribute: .Height, multiplier: 1, constant: 0)
-        questionImageViewConstraintWidthExpanded = NSLayoutConstraint(item: questionImageView!, attribute: .Width, relatedBy: .Equal, toItem: self, attribute: .Width, multiplier: 1, constant: 0)
+        questionImageViewConstraintHeight = NSLayoutConstraint(item: questionImageView!, attribute: .Height, relatedBy: .Equal, toItem: self, attribute: .Height, multiplier: 1, constant: -8)
+        questionImageViewConstraintWidthExpanded = NSLayoutConstraint(item: questionImageView!, attribute: .Width, relatedBy: .Equal, toItem: self, attribute: .Width, multiplier: 1, constant: -8)
         questionImageViewConstraintWidthCollapsed = NSLayoutConstraint(item: questionImageView!, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 0)
        
         questionImageViewConstraintCenterX?.priority = 1000
@@ -67,8 +74,7 @@ class TileView: UIView {
         
         
         // Initialize the tile image
-        tileImage = UIImage(named: "lake")
-        tileImageView = UIImageView(image: tileImage)
+        tileImageView = UIImageView()
         tileImageView?.contentMode = .ScaleAspectFill
         tileImageView?.clipsToBounds = true
         tileImageView?.translatesAutoresizingMaskIntoConstraints = false
@@ -78,8 +84,8 @@ class TileView: UIView {
         
         tileImageViewConstraintCenterX = NSLayoutConstraint(item: tileImageView!, attribute: .CenterX, relatedBy: .Equal, toItem: self, attribute: .CenterX, multiplier: 1, constant: 0)
         tileImageViewConstraintCenterY = NSLayoutConstraint(item: tileImageView!, attribute: .CenterY, relatedBy: .Equal, toItem: self, attribute: .CenterY, multiplier: 1, constant: 0)
-        tileImageViewConstraintHeight = NSLayoutConstraint(item: tileImageView!, attribute: .Height, relatedBy: .Equal, toItem: self, attribute: .Height, multiplier: 1, constant: 0)
-        tileImageViewConstraintWidthExpanded = NSLayoutConstraint(item: tileImageView!, attribute: .Width, relatedBy: .Equal, toItem: self, attribute: .Width, multiplier: 1, constant: 0)
+        tileImageViewConstraintHeight = NSLayoutConstraint(item: tileImageView!, attribute: .Height, relatedBy: .Equal, toItem: self, attribute: .Height, multiplier: 1, constant: -8)
+        tileImageViewConstraintWidthExpanded = NSLayoutConstraint(item: tileImageView!, attribute: .Width, relatedBy: .Equal, toItem: self, attribute: .Width, multiplier: 1, constant: -8)
         tileImageViewConstraintWidthCollapsed = NSLayoutConstraint(item: tileImageView!, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 0)
         
         tileImageViewConstraintCenterX?.priority = 1000
@@ -96,6 +102,8 @@ class TileView: UIView {
             tileImageViewConstraintWidthCollapsed!
         ])
         
+        isImageCovered = true
+        isTileHidden = false
         
         // Setup gesture recognisers
         self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "handleTapGesture:"))
@@ -104,25 +112,58 @@ class TileView: UIView {
     
     
     func handleTapGesture(sender: UITapGestureRecognizer) {
-        if (sender.state == .Ended) {
+        if (sender.state == .Ended && !isTileHidden!) {
             self.flipTile()
             self.delegate?.didSelectTile(self);
         }
     }
     
     
-    func flipTile() {
-        // Animate the constraints
-        questionImageViewConstraintWidthExpanded?.priority = questionImageViewConstraintWidthExpanded?.priority == 999 ? 1 : 999
-        questionImageViewConstraintWidthCollapsed?.priority = questionImageViewConstraintWidthCollapsed?.priority == 999 ? 1 : 999
-        tileImageViewConstraintWidthExpanded?.priority = tileImageViewConstraintWidthExpanded?.priority == 999 ? 1 : 999;
-        tileImageViewConstraintWidthCollapsed?.priority = tileImageViewConstraintWidthCollapsed?.priority == 999 ? 1 : 999;
-        
-        UIView.animateWithDuration(1.5, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 10, options: .TransitionNone, animations: { () -> Void in
-            self.questionImageView?.alpha = self.questionImageView?.alpha == 0 ? 1 : 0;
-            self.tileImageView?.alpha = self.tileImageView?.alpha == 0 ? 1 : 0;
-            self.layoutIfNeeded()
+    func flipTile(delay: NSTimeInterval = 0) {
+            self.isImageCovered = !self.isImageCovered!
+            questionImageViewConstraintWidthExpanded?.priority = questionImageViewConstraintWidthExpanded?.priority == 999 ? 1 : 999
+            questionImageViewConstraintWidthCollapsed?.priority = questionImageViewConstraintWidthCollapsed?.priority == 999 ? 1 : 999
+            tileImageViewConstraintWidthExpanded?.priority = tileImageViewConstraintWidthExpanded?.priority == 999 ? 1 : 999;
+            tileImageViewConstraintWidthCollapsed?.priority = tileImageViewConstraintWidthCollapsed?.priority == 999 ? 1 : 999;
             
+            UIView.animateWithDuration(1.5, delay: delay, usingSpringWithDamping: 0.4, initialSpringVelocity: 10, options: .TransitionNone, animations: { () -> Void in
+                self.questionImageView?.alpha = self.questionImageView?.alpha == 0 ? 1 : 0;
+                self.tileImageView?.alpha = self.tileImageView?.alpha == 0 ? 1 : 0;
+                self.layoutIfNeeded()
+            }, completion: nil)
+        
+    }
+    
+    func resetTile() {
+        coverImage()
+        isTileHidden = false
+    }
+    
+    func coverImage(delay: NSTimeInterval = 0) {
+        questionImageViewConstraintWidthExpanded?.priority = 999
+        questionImageViewConstraintWidthCollapsed?.priority = 1
+        tileImageViewConstraintWidthExpanded?.priority = 1
+        tileImageViewConstraintWidthCollapsed?.priority = 999
+        
+        UIView.animateWithDuration(1.5, delay: delay, usingSpringWithDamping: 0.4, initialSpringVelocity: 10, options: .TransitionNone, animations: { () -> Void in
+            self.questionImageView?.alpha = 1;
+            self.tileImageView?.alpha = 0;
+            self.layoutIfNeeded()
+        }, completion: nil)
+    }
+    
+    
+    func hideTile(delay: NSTimeInterval = 0) {
+        isTileHidden = true
+        questionImageViewConstraintWidthExpanded?.priority = 1
+        questionImageViewConstraintWidthCollapsed?.priority = 999
+        tileImageViewConstraintWidthExpanded?.priority = 1
+        tileImageViewConstraintWidthCollapsed?.priority = 999
+        
+        UIView.animateWithDuration(1.5, delay: delay, usingSpringWithDamping: 0.4, initialSpringVelocity: 10, options: .TransitionNone, animations: { () -> Void in
+            self.questionImageView?.alpha = 0
+            self.tileImageView?.alpha = 0
+            self.layoutIfNeeded()
         }, completion: nil)
     }
 

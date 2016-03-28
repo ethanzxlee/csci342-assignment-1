@@ -11,6 +11,7 @@ import GameplayKit
 
 ///
 protocol GameModelDelegate {
+    func gameDidReset(gameModel: GameModel)
     func gameDidComplete(gameModel: GameModel)
     func didMatchTile(gameModel: GameModel, tileIndex: Int, previousTileIndex: Int)
     func didFailToMatchTile(gameModel: GameModel, tileIndex: Int, previousTileIndex: Int)
@@ -56,10 +57,16 @@ class GameModel : CustomStringConvertible {
     var tileCount: Int
     
     /// Holds the provided images
-    var providedImages : [UIImage]
+    var providedImages : [UIImage?]
     
     /// Holds the delegate
     var delegate : GameModelDelegate?
+    
+    var matchCount : Int?
+    
+    let MATCH_SCORE = 200
+    
+    let FAIL_SCORE = -100
     
     /**
         Initialse a game model with provided number of tiles and their images
@@ -69,7 +76,7 @@ class GameModel : CustomStringConvertible {
             - tileCount: The number of tiles that you plan to have in your game (must be even)
             - images: The array of images you with to use in the game
     */
-    init?(tileCount: Int, images: [UIImage]) {
+    init?(tileCount: Int, images: [UIImage?], delegate: GameModelDelegate) {
         self.tileCount = tileCount
         self.providedImages = [UIImage]()
         self.providedImages.appendContentsOf(images)
@@ -79,6 +86,7 @@ class GameModel : CustomStringConvertible {
             return nil
         }
         
+        self.delegate = delegate
         self.reset();
     }
     
@@ -93,6 +101,7 @@ class GameModel : CustomStringConvertible {
         self.isSecondTurn = nil
         self.matchedTileCount = 0
         self.gameScore = 0
+        self.matchCount = 0
         self.tileData = [TileData]()
         
         // Populates tileData
@@ -109,6 +118,9 @@ class GameModel : CustomStringConvertible {
         self.tileData = GKRandomSource().arrayByShufflingObjectsInArray(Array(0..<self.tileData!.count)).map{
             self.tileData![$0 as! Int]
         }
+        
+        self.delegate?.gameDidReset(self)
+        self.delegate?.scoreDidUpdate(self, newScore: self.gameScore!)
     }
     
     
@@ -119,12 +131,43 @@ class GameModel : CustomStringConvertible {
             - index: Index of the tile
      */
     func pushTileIndex(index: Int) {
-        if (lastTapped == nil) {
-            lastTapped = index
+        if (self.lastTapped == nil) {
+            if (index < tileData!.count) {
+                self.lastTapped = index
+            }
+        }
+        else if (index != self.lastTapped){
+            self.secondLastTapped = lastTapped
+            self.lastTapped = index
+            
+            if (index < tileData!.count) {
+                let secondLastTappedTileData = self.tileData![secondLastTapped!]
+                let lastTappedTileData = self.tileData![lastTapped!]
+                
+                if (secondLastTappedTileData.imageIdentifier! == lastTappedTileData.imageIdentifier!) {
+                    self.delegate?.didMatchTile(self, tileIndex: self.lastTapped!, previousTileIndex: self.secondLastTapped!)
+                    
+                    self.gameScore? += MATCH_SCORE
+                    self.delegate?.scoreDidUpdate(self, newScore: self.gameScore!)
+                    
+                    self.matchCount? += 1
+                    if (self.matchCount >= self.tileCount / 2) {
+                        self.delegate?.gameDidComplete(self)
+                    }
+                }
+                else {
+                    self.delegate?.didFailToMatchTile(self, tileIndex: self.lastTapped!, previousTileIndex: self.secondLastTapped!)
+                    
+                    self.gameScore? += FAIL_SCORE
+                    self.delegate?.scoreDidUpdate(self, newScore: self.gameScore!)
+                }
+                
+                self.secondLastTapped = nil
+                self.lastTapped = nil
+            }
         }
         else {
-            secondLastTapped = lastTapped
-            lastTapped = index
+            self.lastTapped = nil
         }
     }
     
