@@ -13,6 +13,7 @@
 		A17FC00F1CA8C45700546CD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A17FC00E1CA8C45700546CD8 /* Assets.xcassets */; };
 		A17FC0121CA8C45700546CD8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A17FC0101CA8C45700546CD8 /* LaunchScreen.storyboard */; };
 		A17FC01A1CA8C50300546CD8 /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17FC0191CA8C50300546CD8 /* GameModel.swift */; };
+		A17FC01C1CA8F40700546CD8 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17FC01B1CA8F40700546CD8 /* TileView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		A17FC0111CA8C45700546CD8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A17FC0131CA8C45700546CD8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A17FC0191CA8C50300546CD8 /* GameModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
+		A17FC01B1CA8F40700546CD8 /* TileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				A17FC0101CA8C45700546CD8 /* LaunchScreen.storyboard */,
 				A17FC0131CA8C45700546CD8 /* Info.plist */,
 				A17FC0191CA8C50300546CD8 /* GameModel.swift */,
+				A17FC01B1CA8F40700546CD8 /* TileView.swift */,
 			);
 			path = "Match The Tiles";
 			sourceTree = "<group>";
@@ -141,6 +144,7 @@
 			files = (
 				A17FC00A1CA8C45700546CD8 /* ViewController.swift in Sources */,
 				A17FC0081CA8C45700546CD8 /* AppDelegate.swift in Sources */,
+				A17FC01C1CA8F40700546CD8 /* TileView.swift in Sources */,
 				A17FC01A1CA8C50300546CD8 /* GameModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +295,7 @@
 				A17FC0181CA8C45700546CD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
